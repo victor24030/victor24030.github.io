@@ -1,0 +1,134 @@
+:root {
+            --color-lightest: #ffffff; /* Blanc pour les fonds */
+            --color-light: #f5e9ff; /* Couleur claire pour les containers */
+            --color-medium: #d3b3ff; /* Couleur moyenne pour les boutons et l'entête */
+            --color-dark: #b08ae6; /* Couleur foncée pour les survols */
+            --color-text: #333; /* Couleur du texte */
+            --color-title: #6a42c9; /* Couleur des titres */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--color-lightest);
+            color: var(--color-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh; /* S'assure que le body occupe toute la hauteur de la fenêtre */
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--color-medium);
+            color: var(--color-lightest);
+            padding: 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--color-lightest);
+            font-size: 1em;
+        }
+
+        nav ul li a:hover {
+            color: var(--color-dark);
+        }
+
+        .page {
+            display: none;
+            padding: 2em;
+            width: 80%;
+            max-width: 600px;
+            background-color: var(--color-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 80px; /* Décale le contenu pour ne pas être masqué sous l'entête */
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h1 {
+            color: var(--color-title);
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center; /* Centrer horizontalement */
+            width: 100%;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(4, 60px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--color-text);
+            background-color: var(--color-medium);
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            border-radius: 4px;
+        }
+
+        .cell:hover {
+            background-color: var(--color-dark);
+            transform: scale(1.05);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--color-medium);
+            color: var(--color-lightest);
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--color-dark);
+            transform: scale(1.1);
+        }
+		

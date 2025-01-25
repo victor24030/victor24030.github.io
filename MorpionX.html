@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion 4x4 avec Conversion</title>
+	<link rel="stylesheet" href="MorpCSS.css">
+</head>
+<body>
+<header>
+    <h1>__Four_XO</h1>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showPage('Home')">Home</a></li>
+            <li><a href="#" onclick="showPage('Game')">Game</a></li>
+            <li><a href="#" onclick="showPage('Rules')">Rules</a></li>
+            <li><a href="#" onclick="showPage('Contact')">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div id="Home" class="page active">
+    <h1>Welcome in Four-XO</h1>
+    <p>Discover a tic-tac-toe game with unique rules!</p>
+</div>
+
+<div id="Game" class="page">
+    <h1>Let's play</h1>
+    <div id="message"></div>
+    <div class="game-container">
+        <div class="board" id="board"></div>
+    </div>
+    <button id="resetButton">Reset</button>
+</div>
+
+<div id="Rules" class="page">
+    <h1>Game Rules</h1>
+    <p>The 4x4 Tic-Tac-Toe is a strategic game where each move counts. It’s an extended version of the classic Tic-Tac-Toe, with a larger board that offers more possibilities for tactical plays. Here's how to play:</p>
+
+    <h3>Objective</h3>
+    <p>The objective of the game is to get four of your marks (either X or O) in a row, either horizontally, vertically, or diagonally. The first player to achieve this wins the game.</p>
+
+    <h3>Gameplay</h3>
+    <p>The game is played in two phases:</p>
+    <ul>
+        <li><strong>Phase 1: Placing a Mark</strong> - On your first turn, place your mark on any empty cell on the grid. After your first move, your opponent takes their turn.</li>
+        <li><strong>Phase 2: Conversion</strong> - Once both players have placed at least one mark, players can begin converting the opponent's marks. To do so, select one of the opponent's marks on the grid and replace it with your own.</li>
+    </ul>
+
+    <h3>Winning the Game</h3>
+    <p>The game ends when a player manages to place four of their marks in a row, whether horizontally, vertically, or diagonally. If all cells are filled and no player has achieved this, the game ends in a draw.</p>
+
+    <h3>Game Reset</h3>
+    <p>If the game ends, you can reset the board and start a new round by clicking the reset button.</p>
+</div>
+
+<div id="Contact" class="page">
+    <h1>Contact</h1>
+    <p>Do you have any questions? Contact us at: contact@Tic-Tac-Toe.com</p>
+</div>
+<script src="MorpSCRIPT.js"></script>
+</body>
+</html>
