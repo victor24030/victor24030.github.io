@@ -12,7 +12,7 @@
     const boardElement = document.getElementById('board');
     const messageElement = document.getElementById('message');
     const resetButton = document.getElementById('resetButton');
-
+    messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
     function renderBoard() {
         boardElement.innerHTML = '';
         board.forEach((row, rowIndex) => {
@@ -26,52 +26,59 @@
         });
     }
 
-    function handleCellClick(row, col) {
-        if (gameOver) return;
+   function handleCellClick(row, col) {
+    if (gameOver) return;
 
-        if (isPlacing) {
-            if (board[row][col] === '') {
-                board[row][col] = currentPlayer;
-                renderBoard();
+    if (isPlacing) {
+        if (board[row][col] === '') {
+            board[row][col] = currentPlayer;
+            renderBoard();
 
-                if (isFirstMove) {
-                    isFirstMove = false;
-                    currentPlayer = 'O';
-                    messageElement.textContent = `Joueur ${currentPlayer}, place un pion ou convertis un adversaire.`;
-                } else {
-                    isPlacing = false;
-                    messageElement.textContent = `Joueur ${currentPlayer}, sélectionne un pion adverse à convertir.`;
-                }
+            if (isFirstMove) {
+                isFirstMove = false;
+                currentPlayer = 'O';
+                messageElement.textContent = `Joueur ${currentPlayer}, place un pion ou convertis un adversaire.`;
+            } else {
+                isPlacing = false;
+                messageElement.textContent = `Joueur ${currentPlayer}, sélectionne un pion adverse à convertir.`;
+            }
+        }
+    } else {
+        if (board[row][col] && board[row][col] !== currentPlayer) {
+            board[row][col] = currentPlayer;
+            isPlacing = true;
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            renderBoard();
+            checkWinner();
+            
+            if (!gameOver) {
+                messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
             }
         } else {
-            if (board[row][col] && board[row][col] !== currentPlayer) {
-                board[row][col] = currentPlayer;
-                isPlacing = true;
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                renderBoard();
-                checkWinner();
-                messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
-            } else {
-                messageElement.textContent = 'Sélectionnez un pion adverse à convertir.';
-            }
+            messageElement.textContent = 'Sélectionnez un pion adverse à convertir.';
         }
     }
+}
+
 
     function checkWinner() {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                if (checkLine(i, j)) {
-                    gameOver = true;
-                    messageElement.textContent = `Le joueur ${currentPlayer} a gagné !`;
-                    return;
-                }
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (checkLine(i, j)) {
+                gameOver = true;
+				let noncurrentPlayer = currentPlayer === 'X' ? 'O' : 'X'; // Sauvegarde l'autre joueur
+                const winner = noncurrentPlayer; // Sauvegarde du joueur avant de le changer
+                messageElement.textContent = `Le joueur ${winner} a gagné !`;
+                return;
             }
         }
-        if (board.flat().every(cell => cell !== '')) {
-            gameOver = true;
-            messageElement.textContent = 'Match nul !';
-        }
     }
+    if (board.flat().every(cell => cell !== '')) {
+        gameOver = true;
+        messageElement.textContent = 'Match nul !';
+    }
+}
+
 
     function checkLine(row, col) {
         const player = board[row][col];
@@ -96,7 +103,7 @@
         gameOver = false;
         isPlacing = true;
         isFirstMove = true;
-        messageElement.textContent = '';
+        messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
         renderBoard();
     };
 
