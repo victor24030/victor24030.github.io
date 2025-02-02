@@ -1,4 +1,5 @@
-    let currentPlayer = 'X';
+console.log("Script chargé");
+ let currentPlayer = 'X';
     let board = [
         ['', '', '', ''],
         ['', '', '', ''],
@@ -13,6 +14,7 @@
     const messageElement = document.getElementById('message');
     const resetButton = document.getElementById('resetButton');
     messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
+
     function renderBoard() {
         boardElement.innerHTML = '';
         board.forEach((row, rowIndex) => {
@@ -30,34 +32,39 @@
     if (gameOver) return;
 
     if (isPlacing) {
-        if (board[row][col] === '') {
-            board[row][col] = currentPlayer;
-            renderBoard();
+       if (board[row][col] === '') {
+    board[row][col] = currentPlayer;
+    renderBoard();
+    checkWinner(); // Vérifier la victoire immédiatement après le placement
 
-            if (isFirstMove) {
-                isFirstMove = false;
-                currentPlayer = 'O';
-                messageElement.textContent = `Joueur ${currentPlayer}, place un pion ou convertis un adversaire.`;
-            } else {
-                isPlacing = false;
-                messageElement.textContent = `Joueur ${currentPlayer}, sélectionne un pion adverse à convertir.`;
-            }
-        }
+    if (gameOver) return; // Stopper ici si le jeu est terminé
+
+    if (isFirstMove) {
+        isFirstMove = false;
+        currentPlayer = 'O';
+        messageElement.textContent = `Joueur ${currentPlayer}, place un pion ou convertis un adversaire.`;
     } else {
-        if (board[row][col] && board[row][col] !== currentPlayer) {
-            board[row][col] = currentPlayer;
-            isPlacing = true;
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            renderBoard();
-            checkWinner();
-            
-            if (!gameOver) {
-                messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
-            }
-        } else {
-            messageElement.textContent = 'Sélectionnez un pion adverse à convertir.';
-        }
+        isPlacing = false;
+        messageElement.textContent = `Joueur ${currentPlayer}, sélectionne un pion adverse à convertir.`;
     }
+}
+
+    } else {
+    if (board[row][col] && board[row][col] !== currentPlayer) {
+        board[row][col] = currentPlayer;
+        renderBoard();
+        checkWinner(); // Vérifier avant de changer de joueur
+
+        if (gameOver) return; // Si le jeu est fini, on arrête ici
+
+        isPlacing = true;
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
+    } else {
+        messageElement.textContent = 'Sélectionnez un pion adverse à convertir.';
+    }
+}
+
 }
 
 
@@ -67,7 +74,7 @@
             if (checkLine(i, j)) {
                 gameOver = true;
 				let noncurrentPlayer = currentPlayer === 'X' ? 'O' : 'X'; // Sauvegarde l'autre joueur
-                const winner = noncurrentPlayer; // Sauvegarde du joueur avant de le changer
+                const winner = currentPlayer; // Sauvegarde du joueur avant de le changer
                 messageElement.textContent = `Le joueur ${winner} a gagné !`;
                 return;
             }
@@ -108,9 +115,9 @@
     };
 
     function showPage(pageId) {
-        const pages = document.querySelectorAll('.page');
-        pages.forEach(page => page.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-    }
-
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+}
     renderBoard();
+
