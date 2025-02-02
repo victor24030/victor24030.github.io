@@ -1,4 +1,4 @@
-:root {
+	:root {
             --color-lightest: #ffffff; /* Blanc pour les fonds */
             --color-light: #ffc3c1; /* Couleur claire pour les containers */
             --color-medium: #ff6f6a; /* Couleur moyenne pour les boutons et l'entête */
@@ -131,4 +131,3 @@
             background-color: var(--color-dark);
             transform: scale(1.1);
         }
-		
