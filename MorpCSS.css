@@ -23,7 +23,8 @@
             background-color: var(--color-medium);
             color: var(--color-lightest);
             padding: 20px;
-            width: 97%;
+            width: 100%;
+            box-sizing: border-box;
             position: fixed;
             top: 0;
             left: 0;
