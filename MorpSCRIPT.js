@@ -107,8 +107,8 @@ function startGame() {
     let p1Input = document.getElementById('player1Input').value.trim();
     let p2Input = document.getElementById('player2Input').value.trim();
     
-    player1Symbol = p1Input !== '' ? p1Input : '❌';
-    player2Symbol = p2Input !== '' ? p2Input : '⭕';
+    player1Symbol = p1Input !== '' ? p1Input : '⚪';
+    player2Symbol = p2Input !== '' ? p2Input : '⚫';
     
     if (player1Symbol === player2Symbol) {
         alert("Les symboles doivent être différents !");
