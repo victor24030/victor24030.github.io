@@ -1,11 +1,12 @@
-	:root {
-            --color-lightest: #ffffff; /* Blanc pour les fonds */
-            --color-light: #ffc3c1; /* Couleur claire pour les containers */
-            --color-medium: #ff6f6a; /* Couleur moyenne pour les boutons et l'entête */
-            --color-dark: #cc2300; /* Couleur foncée pour les survols */
-            --color-text: #333; /* Couleur du texte */
-            --color-title: red; /* Couleur des titres */
-        }
+:root {
+  --color-lightest: #ffffff; /* Blanc pour les fonds */
+  --color-light: #f5f5f5;     /* Gris très clair pour les containers */
+  --color-medium: #e0e0e0;    /* Gris clair pour les boutons et l'entête */
+  --color-dark: #cccccc;      /* Gris pour les survols */
+  --color-text: #222222;      /* Texte presque noir */
+  --color-title: #000000;     /* Titres en noir pur */
+}
+
 
         body {
             font-family: Arial, sans-serif;
