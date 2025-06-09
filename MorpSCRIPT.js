@@ -1,7 +1,7 @@
 console.log("Script chargé");
 
-let player1Symbol = '❌'; // Symbole par défaut
-let player2Symbol = '⭕'; // Symbole par défaut
+let player1Symbol = '⚪'; // Symbole par défaut
+let player2Symbol = '⚫'; // Symbole par défaut
 let currentPlayer = player1Symbol;
 let board = Array(4).fill(null).map(() => Array(4).fill(''));
 let gameOver = false;
