@@ -8,11 +8,10 @@ let isPlacing = true;
 let isFirstMove = true;
 let loadingInterval;
 
+// ==== FIREBASE MODULE ====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const firebaseConfig = {
   apiKey: "...",
   authDomain: "...",
@@ -23,6 +22,9 @@ const firebaseConfig = {
   appId: "...",
   measurementId: "..."
 };
+
+const app = initializeApp(firebaseConfig); // 🔹 après config
+const db = getDatabase(app);              // 🔹 après init
 
 // ==== DOM ELEMENTS ====
 const boardElement = document.getElementById('board');
@@ -225,6 +227,7 @@ function stopLoadingAnimation() {
 
 // ==== INITIAL RENDER ====
 renderBoard();
+
 
 
 
