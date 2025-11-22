@@ -13,6 +13,95 @@ const messageElement = document.getElementById('message');
 const resetButton = document.getElementById('resetButton');
 messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
 
+// ===== FIREBASE =====
+// Mets ton firebaseConfig ici
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  databaseURL: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "..."
+};
+
+// Initialisation
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ID unique pour ce joueur
+const uid = Math.random().toString(36).substring(2, 10);
+let currentGame = null;
+
+// Bouton trouver une partie
+document.getElementById("findMatchButton").onclick = () => {
+    findMatch();
+};
+
+function findMatch() {
+    const waitingRef = db.ref("waitingPlayer");
+    const onlineMsg = document.getElementById("onlineMessage");
+
+    waitingRef.once("value").then(snapshot => {
+        const waiting = snapshot.val();
+        if (waiting && waiting !== uid) {
+            // Match trouvé
+            const gameId = Math.random().toString(36).substring(2, 8);
+            db.ref("games/" + gameId).set({
+                board: Array(4).fill('').map(()=>Array(4).fill('')),
+                currentPlayer: '⚪',
+                player1: waiting,
+                player2: uid
+            });
+            db.ref("waitingPlayer").set(null); // file vide
+            onlineMsg.textContent = "Adversaire trouvé ! Partie commencée.";
+            startGameOnline(gameId);
+        } else {
+            // personne n'attend, on s'inscrit
+            waitingRef.set(uid);
+            onlineMsg.textContent = "En attente d'un adversaire...";
+            waitingRef.on("value", snap => {
+                if (snap.val() !== uid) {
+                    // Un autre joueur est arrivé
+                    db.ref("games").orderByChild("player2").equalTo(uid)
+                      .once("value").then(gameSnap => {
+                        const data = gameSnap.val();
+                        if (!data) return;
+                        const gameId = Object.keys(data)[0];
+                        onlineMsg.textContent = "Adversaire trouvé ! Partie commencée.";
+                        startGameOnline(gameId);
+                    });
+                }
+            });
+        }
+    });
+}
+
+function startGameOnline(gameId) {
+    currentGame = gameId;
+    db.ref("games/" + gameId).on("value", snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
+        board = data.board;
+        currentPlayer = data.currentPlayer;
+        renderBoard();
+        messageElement.textContent = `Joueur ${currentPlayer}, à toi !`;
+    });
+}
+
+// Après chaque coup en ligne, tu ajoutes :
+function updateOnlineBoard() {
+    if(currentGame) {
+        db.ref("games/" + currentGame).update({
+            board,
+            currentPlayer
+        });
+    }
+}
+
+// Ensuite, dans handleCellClick(), tu appelles updateOnlineBoard() après chaque coup
+
+
 function renderBoard() {
     boardElement.innerHTML = '';
     board.forEach((row, rowIndex) => {
@@ -33,6 +122,7 @@ function handleCellClick(row, col) {
         if (board[row][col] === '') {
             board[row][col] = currentPlayer;
             renderBoard();
+            if(currentGame) updateOnlineBoard();
             checkWinner();
             if (gameOver) return;
 
@@ -49,6 +139,7 @@ function handleCellClick(row, col) {
         if (board[row][col] && board[row][col] !== currentPlayer) {
             board[row][col] = currentPlayer;
             renderBoard();
+            if(currentGame) updateOnlineBoard();
             checkWinner();
             if (gameOver) return;
             isPlacing = true;
@@ -123,3 +214,4 @@ function startGame() {
 }
 
 renderBoard();
+
