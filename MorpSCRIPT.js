@@ -177,25 +177,21 @@ function startGameOnline(gameId){
     stopLoadingAnimation();
     onlineMsg.textContent = "Adversaire trouvé ! Partie commencée.";
 
-    // 🔹 Crée un plateau vide côté client au démarrage
-    board = Array(4).fill(null).map(()=>Array(4).fill(''));
-    currentPlayer = '⚪';
-    renderBoard();
+    // Place le board dans la page Online
+    document.getElementById("onlineBoard").appendChild(boardElement);
 
-    // 🔹 Afficher le plateau directement dans l'onglet Online si tu veux
-    document.getElementById('Online').appendChild(boardElement);
-
-    // 🔹 Écoute les changements de Firebase
+    // Écoute Firebase
     onValue(ref(db,"games/"+gameId), snapshot=>{
         const data = snapshot.val();
-        if(!data) return;
+        if(!data || !data.board) return;
+
         board = data.board;
         currentPlayer = data.currentPlayer;
+
         renderBoard();
         messageElement.textContent = `Joueur ${currentPlayer}, à toi !`;
     });
 }
-
 
 // ==== UPDATE ONLINE BOARD ====
 function updateOnlineBoard(){
@@ -230,6 +226,7 @@ function stopLoadingAnimation() {
 
 // ==== INITIAL RENDER ====
 renderBoard();
+
 
 
 
