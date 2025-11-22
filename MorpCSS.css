@@ -7,6 +7,25 @@
   --color-title: #000000;     /* Titres en noir pur */
 }
 
+/* Online UI (simple) */
+.online-header {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:12px;
+}
+.player-box { text-align:center; }
+#yourEmojiDisplay, #opponentEmojiDisplay {
+  font-size: 36px;
+  margin-top:6px;
+}
+.vs { font-weight:700; font-size:20px; }
+#onlineBoardContainer { display:flex; justify-content:center; margin-top:12px; }
+#statusLine { margin-top:10px; font-weight:600; }
+#loadingDots { font-size:20px; margin-top:6px; }
+#onlineBoard { /* placeholder: will contain .board */ }
+#onlineControls button { margin-right:8px; }
 
         body {
             font-family: Arial, sans-serif;
@@ -133,3 +152,4 @@
             background-color: var(--color-dark);
             transform: scale(1.1);
         }
+
