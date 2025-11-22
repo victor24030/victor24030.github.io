@@ -6,6 +6,9 @@ let board = Array(4).fill(null).map(() => Array(4).fill(''));
 let gameOver = false;
 let isPlacing = true;
 let isFirstMove = true;
+let loadingInterval;
+
+
 
 // ==== DOM ELEMENTS ====
 const boardElement = document.getElementById('board');
@@ -126,6 +129,8 @@ function startGame() {
 findButton.onclick = () => findMatch();
 
 function findMatch() {
+    onlineMsg.textContent = "En attente d'un adversaire";
+startLoadingAnimation();
     const waitingRef = ref(db, "waitingPlayer");
 
     get(waitingRef).then(snapshot => {
@@ -163,6 +168,8 @@ function findMatch() {
 // ==== START ONLINE GAME ====
 function startGameOnline(gameId){
     currentGame = gameId;
+    onlineMsg.textContent = "Adversaire trouvé ! Partie commencée.";
+stopLoadingAnimation();
     onValue(ref(db,"games/"+gameId), snapshot=>{
         const data = snapshot.val();
         if(!data) return;
@@ -186,5 +193,24 @@ function showPage(pageId){
     document.getElementById(pageId).classList.add('active');
 }
 
+// ==== DOTS ====
+function startLoadingAnimation() {
+    const dots = document.getElementById("loadingDots");
+    let count = 0;
+    loadingInterval = setInterval(() => {
+        count = (count + 1) % 4; // 0..3
+        dots.textContent = '.'.repeat(count);
+    }, 500);
+}
+
+function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+    document.getElementById("loadingDots").textContent = '';
+}
+
+
 // ==== INITIAL RENDER ====
 renderBoard();
+
+
+
