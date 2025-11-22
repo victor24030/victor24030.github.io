@@ -8,7 +8,21 @@ let isPlacing = true;
 let isFirstMove = true;
 let loadingInterval;
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getDatabase, ref, set, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  databaseURL: "https://tiktactoe-1e4d9-default-rtdb.firebaseio.com",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "...",
+  measurementId: "..."
+};
 
 // ==== DOM ELEMENTS ====
 const boardElement = document.getElementById('board');
@@ -211,6 +225,7 @@ function stopLoadingAnimation() {
 
 // ==== INITIAL RENDER ====
 renderBoard();
+
 
 
 
