@@ -12,17 +12,7 @@ let loadingInterval;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  databaseURL: "https://tiktactoe-1e4d9-default-rtdb.firebaseio.com",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-  measurementId: "..."
-};
-
+const firebaseConfig = { apiKey: "AIzaSyBqqD76xaN30m4eqVbUDFqXMrIdsv3ihII", authDomain: "tiktactoe-1e4d9.firebaseapp.com", projectId: "tiktactoe-1e4d9", storageBucket: "tiktactoe-1e4d9.firebasestorage.app", messagingSenderId: "240419840590", appId: "1:240419840590:web:aa5f7fde9dbf45ea4e591f", measurementId: "G-1X7X2KPQ1H" };
 const app = initializeApp(firebaseConfig); // 🔹 après config
 const db = getDatabase(app);              // 🔹 après init
 
@@ -240,6 +230,7 @@ function stopLoadingAnimation() {
 
 // ==== INITIAL RENDER ====
 renderBoard();
+
 
 
 
