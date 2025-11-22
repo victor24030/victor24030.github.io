@@ -15,15 +15,7 @@ messageElement.textContent = `Joueur ${currentPlayer}, place un pion.`;
 
 // ===== FIREBASE =====
 // Mets ton firebaseConfig ici
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  databaseURL: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
-};
+const firebaseConfig = { apiKey: "AIzaSyBqqD76xaN30m4eqVbUDFqXMrIdsv3ihII", authDomain: "tiktactoe-1e4d9.firebaseapp.com", projectId: "tiktactoe-1e4d9", storageBucket: "tiktactoe-1e4d9.firebasestorage.app", messagingSenderId: "240419840590", appId: "1:240419840590:web:aa5f7fde9dbf45ea4e591f", measurementId: "G-1X7X2KPQ1H" };
 
 // Initialisation
 const app = firebase.initializeApp(firebaseConfig);
@@ -214,4 +206,5 @@ function startGame() {
 }
 
 renderBoard();
+
 
