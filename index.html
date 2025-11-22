@@ -20,13 +20,34 @@
     </ul>
 </nav>
 </header>
+<!-- ONLINE section (style B) -->
 <div id="Online" class="page">
-    <h1>Multiplayer Online</h1>
-	<div id="onlineBoard"></div>
-    <p>Appuyez sur le bouton ci-dessous pour trouver un adversaire en ligne.</p>
-    <button id="findMatchButton">Trouver une partie</button>
-    <div id="onlineMessage"></div>
-    <div id="loadingDots"></div>
+  <h1>Online Match</h1>
+
+  <div class="online-header">
+    <div class="player-box">
+      <div>Your emoji</div>
+      <div id="yourEmojiDisplay">⚪</div>
+    </div>
+    <div class="vs">VS</div>
+    <div class="player-box">
+      <div>Opponent emoji</div>
+      <div id="opponentEmojiDisplay">⚫</div>
+    </div>
+  </div>
+
+  <div id="onlineControls">
+    <button id="findMatchButton">Find match</button>
+    <button id="quitMatchButton" style="display:none">Quit</button>
+  </div>
+
+  <div id="statusLine">Not connected</div>
+  <div id="loadingDots"></div>
+
+  <div id="onlineBoardContainer">
+    <!-- board will be moved here for online games -->
+    <div id="onlineBoard"></div>
+  </div>
 </div>
 
 <div id="Home" class="page active">
@@ -79,9 +100,13 @@
 	<p>Made with github</p>
 </div>
 <br>
-<script type="module" src="MorpSCRIPT.js"></script>
+
+<script src="MorpSCRIPT_local.js"></script> <!-- non-module: global helpers & local game -->
+<script type="module" src="MorpSCRIPT_online.js"></script> <!-- module: firebase online -->
+
 </body>
 </html>
+
 
 
 
