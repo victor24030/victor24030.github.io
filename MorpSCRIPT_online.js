@@ -39,6 +39,7 @@ const opponentEmojiDisplay = document.getElementById('opponentEmojiDisplay');
 const maxActions = 2;
 const boardElement = document.createElement('div');
 
+
 boardElement.className = 'board';
 boardElement.style.display = 'grid';
 boardElement.style.gridTemplateColumns = 'repeat(4, 60px)';
@@ -104,18 +105,21 @@ async function findMatch(){
     const waitingSymbol = waiting.symbol || '⚪';
     const myEmoji = getChosenEmojiFromHome();
 
-    const gameObj = {
-      board: Array(4).fill(null).map(()=>Array(4).fill('')),
-      currentPlayer: waitingSymbol, // let waiting player start (first in queue)
-      player1: waiting.uid,
-      player2: uid,
-      player1Symbol: waitingSymbol,
-      player2Symbol: myEmoji,
-      isPlacing: true,
-      isFirstMove: true,
-      gameOver: false,
-      actionsThisTurn: 0,
-    };
+const gameObj = {
+  board: Array(4).fill(null).map(()=>Array(4).fill('')),
+  currentPlayer: waitingSymbol,
+  player1: waiting.uid,
+  player2: uid,
+  player1Symbol: waitingSymbol,
+  player2Symbol: myEmoji,
+  player1FirstMove: true,
+  player2FirstMove: true,
+  isPlacing: true,
+  isFirstMove: true,
+  gameOver: false,
+  actionsThisTurn: 0
+};
+
 
     await set(ref(db, 'games/'+gameId), gameObj);
     // clear waiting slot
@@ -267,79 +271,109 @@ async function quitMatch(){
 }
 
 /* =========== CLICK HANDLING (online) =========== */
-function handleOnlineClick(row,col){
-  if(!currentGameId) return;
-  // must have mySymbol and must be my turn
-  if(!mySymbol) { statusLine.textContent = 'Not in game'; return; }
-  if(onlineGameOver) return;
+async function handleOnlineClick(row, col) {
+    if (!currentGameId) return;
+    if (!mySymbol) return;
 
-  // check whose turn
-  if(currentPlayerSymbol !== mySymbol){
-    statusLine.textContent = "Not your turn";
-    return;
-  }
+    const snap = await get(ref(db, "games/" + currentGameId));
+    const data = snap.val();
+    if (!data) return;
+    if (data.gameOver) return;
 
-  // game phases: placing / converting are stored in onlineIsPlacing / onlineIsFirstMove
-if (onlineIsPlacing) {
-    if (onlineBoard[row][col] !== '') {
-        statusLine.textContent = "Cell not empty";
+    const board = data.board;
+    const isPlacing = data.isPlacing;
+    let actions = data.actionsThisTurn || 0;
+
+    // déterminer si c’est mon tour
+    const isMyTurn = data.currentPlayer === mySymbol;
+    if (!isMyTurn) {
+        statusLine.textContent = "Pas ton tour";
         return;
     }
 
-    // place stone
-    onlineBoard[row][col] = mySymbol;
-    actionsThisTurn++;
+    // symbole ennemi
+    const amIPlayer1 = uid === data.player1;
+    const enemySymbol = amIPlayer1 ? data.player2Symbol : data.player1Symbol;
 
-    // end of turn?
-    if (actionsThisTurn >= maxActions) {
-        actionsThisTurn = 0;
-        onlineIsPlacing = false; // next phase: convert
-        currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
+    /* ============================
+            PHASE : PLACER
+       ============================ */
+    if (isPlacing) {
+        // case déjà occupée ?
+        if (board[row][col] !== "") {
+            statusLine.textContent = "Case occupée";
+            return;
+        }
+
+        // placer
+        board[row][col] = mySymbol;
+        actions++;
+
+        // fin de tour ?
+        let nextPlayer = data.currentPlayer;
+        let nextIsPlacing = true;
+
+let nextIsFirstMove = data.isFirstMove; // garde l’état par défaut
+
+if (actions >= maxActions) {
+    actions = 0;
+    if (isPlacing) {
+        nextIsPlacing = false; // passe en conversion
+        nextIsFirstMove = false; // le premier tour de placement est fini
+    } else {
+        nextIsPlacing = true; // retour en placement
     }
-
-    update(ref(db, 'games/' + currentGameId), {
-        board: onlineBoard,
-        currentPlayer: currentPlayerSymbol,
-        isPlacing: onlineIsPlacing,
-        isFirstMove: onlineIsFirstMove,
-        actionsThisTurn: actionsThisTurn,
-        gameOver: onlineGameOver
-    });
-
-    renderOnlineBoard();
-    return;
+    nextPlayer = (mySymbol === data.player1Symbol) ? data.player2Symbol : data.player1Symbol;
 }
 
-  else {
-// convert phase
-if (onlineBoard[row][col] === '' || onlineBoard[row][col] === mySymbol) {
-    statusLine.textContent = "Select an enemy stone";
-    return;
-}
 
-onlineBoard[row][col] = mySymbol;
-actionsThisTurn++;
-
-if (actionsThisTurn >= maxActions) {
-    actionsThisTurn = 0;
-    onlineIsPlacing = true;
-    currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
-}
-
-update(ref(db, 'games/' + currentGameId), {
-    board: onlineBoard,
-    currentPlayer: currentPlayerSymbol,
-    isPlacing: onlineIsPlacing,
-    isFirstMove: onlineIsFirstMove,
-    actionsThisTurn: actionsThisTurn,
-    gameOver: onlineGameOver
+await update(ref(db, "games/" + currentGameId), {
+    board,
+    currentPlayer: nextPlayer,
+    isPlacing: nextIsPlacing,
+    isFirstMove: nextIsFirstMove,
+    actionsThisTurn: actions
 });
 
-renderOnlineBoard();
-return;
 
-  }
+
+        return;
+    }
+
+    /* ============================
+            PHASE : CONVERTIR
+       ============================ */
+    else {
+        // doit cliquer un pion adverse
+        if (board[row][col] === "" || board[row][col] === mySymbol) {
+            statusLine.textContent = "Choisis un pion adverse";
+            return;
+        }
+
+        // convertir
+        board[row][col] = mySymbol;
+        actions++;
+
+        let nextPlayer = data.currentPlayer;
+        let nextIsPlacing = false;
+
+        if (actions >= maxActions) {
+            actions = 0;
+            nextIsPlacing = true; // retour à la phase placement
+            nextPlayer = (mySymbol === data.player1Symbol) ? data.player2Symbol : data.player1Symbol;
+        }
+
+        await update(ref(db, "games/" + currentGameId), {
+            board,
+            currentPlayer: nextPlayer,
+            isPlacing: nextIsPlacing,
+            actionsThisTurn: actions
+        });
+
+        return;
+    }
 }
+
 
 /* =========== STARTUP =========== */
 (function initOnlineUI(){
