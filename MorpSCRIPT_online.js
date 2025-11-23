@@ -26,9 +26,9 @@ let mySymbol = null;            // my symbol (string)
 let player1Sym = null;         // symbol stored in Firebase for player1
 let player2Sym = null;
 let currentGameId = null;
-const uid = Math.random().toString(36).substring(2,10);
+let actionsThisTurn = 0;
 
-/* =========== DOM =========== */
+const uid = Math.random().toString(36).substring(2,10);
 const onlineBoardContainer = document.getElementById('onlineBoard'); // will contain .board
 const statusLine = document.getElementById('statusLine');
 const loadingDots = document.getElementById('loadingDots');
@@ -36,9 +36,9 @@ const findBtn = document.getElementById('findMatchButton');
 const quitBtn = document.getElementById('quitMatchButton');
 const yourEmojiDisplay = document.getElementById('yourEmojiDisplay');
 const opponentEmojiDisplay = document.getElementById('opponentEmojiDisplay');
-
-// reuse the same .board DOM structure used in local: create a board element
+const maxActions = 2;
 const boardElement = document.createElement('div');
+
 boardElement.className = 'board';
 boardElement.style.display = 'grid';
 boardElement.style.gridTemplateColumns = 'repeat(4, 60px)';
@@ -113,7 +113,8 @@ async function findMatch(){
       player2Symbol: myEmoji,
       isPlacing: true,
       isFirstMove: true,
-      gameOver: false
+      gameOver: false,
+      actionsThisTurn: 0,
     };
 
     await set(ref(db, 'games/'+gameId), gameObj);
@@ -198,6 +199,7 @@ async function startOnlineGame(gameId){
     currentPlayerSymbol = data.currentPlayer || currentPlayerSymbol;
     player1Sym = data.player1Symbol || player1Sym;
     player2Sym = data.player2Symbol || player2Sym;
+    actionsThisTurn = data.actionsThisTurn ?? 0;
 
     // determine mySymbol based on uid
     if(data.player1 === uid) mySymbol = player1Sym;
@@ -278,54 +280,64 @@ function handleOnlineClick(row,col){
   }
 
   // game phases: placing / converting are stored in onlineIsPlacing / onlineIsFirstMove
-  if(onlineIsPlacing){
-    if(onlineBoard[row][col] === ''){
-      onlineBoard[row][col] = mySymbol;
-      // update flags
-      if(onlineIsFirstMove){
-        onlineIsFirstMove = false;
-        // switch current player to opponent
+if (onlineIsPlacing) {
+    if (onlineBoard[row][col] !== '') {
+        statusLine.textContent = "Cell not empty";
+        return;
+    }
+
+    // place stone
+    onlineBoard[row][col] = mySymbol;
+    actionsThisTurn++;
+
+    // end of turn?
+    if (actionsThisTurn >= maxActions) {
+        actionsThisTurn = 0;
+        onlineIsPlacing = false; // next phase: convert
         currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
-      } else {
-        // after placing normally, go to convert phase for next player
-        onlineIsPlacing = false;
-        currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
-      }
-      // push full state to firebase
-      update(ref(db, 'games/'+currentGameId), {
+    }
+
+    update(ref(db, 'games/' + currentGameId), {
         board: onlineBoard,
         currentPlayer: currentPlayerSymbol,
         isPlacing: onlineIsPlacing,
         isFirstMove: onlineIsFirstMove,
+        actionsThisTurn: actionsThisTurn,
         gameOver: onlineGameOver
-      });
-      renderOnlineBoard();
-      return;
-    } else {
-      statusLine.textContent = 'Cell not empty';
-      return;
-    }
-  } else {
-    // convert enemy stone
-    if(onlineBoard[row][col] && onlineBoard[row][col] !== mySymbol){
-      onlineBoard[row][col] = mySymbol;
-      // end convert phase: next player places
-      onlineIsPlacing = true;
-      currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
-      // update state
-      update(ref(db, 'games/'+currentGameId), {
-        board: onlineBoard,
-        currentPlayer: currentPlayerSymbol,
-        isPlacing: onlineIsPlacing,
-        isFirstMove: onlineIsFirstMove,
-        gameOver: onlineGameOver
-      });
-      renderOnlineBoard();
-      return;
-    } else {
-      statusLine.textContent = 'Select an enemy stone to convert';
-      return;
-    }
+    });
+
+    renderOnlineBoard();
+    return;
+}
+
+  else {
+// convert phase
+if (onlineBoard[row][col] === '' || onlineBoard[row][col] === mySymbol) {
+    statusLine.textContent = "Select an enemy stone";
+    return;
+}
+
+onlineBoard[row][col] = mySymbol;
+actionsThisTurn++;
+
+if (actionsThisTurn >= maxActions) {
+    actionsThisTurn = 0;
+    onlineIsPlacing = true;
+    currentPlayerSymbol = (mySymbol === player1Sym ? player2Sym : player1Sym);
+}
+
+update(ref(db, 'games/' + currentGameId), {
+    board: onlineBoard,
+    currentPlayer: currentPlayerSymbol,
+    isPlacing: onlineIsPlacing,
+    isFirstMove: onlineIsFirstMove,
+    actionsThisTurn: actionsThisTurn,
+    gameOver: onlineGameOver
+});
+
+renderOnlineBoard();
+return;
+
   }
 }
 
